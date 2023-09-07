@@ -1,0 +1,60 @@
+---
+title: "GabyCzarniak_A01_Introduction"
+author: "Gaby Czarniak"
+output: pdf_document
+geometry: margin=2.54cm
+---
+
+## OVERVIEW
+
+This exercise accompanies the introductory material in Environmental Data Analytics. 
+
+## Directions
+1.  Rename this file `<FirstLast>_A01_Introduction.Rmd` (replacing `<FirstLast>` with your first and last name).
+2.  Change "Student Name" on line 3 (above) with your name.
+3.  Work through the steps, **creating code and output** that fulfill each instruction.
+4.  Be sure to **answer the questions** in this assignment document.
+5.  When you have completed the assignment, **Knit** the text and code into a single PDF file.
+6.  After Knitting, submit the completed exercise (PDF file) to the appropriate assigment section on Sakai.
+
+
+## 1) Finish setting up R Studio
+
+### Install TinyTex
+Now, run this code cell the same way. This will install "tinytex" -- a helper app that allows you to knit your markdown documents into professional quality PDFs.
+```{r install tiny tex, eval=FALSE, include=FALSE}
+#install tinytext
+tinytex::install_tinytex()
+```
+
+### Set your default knit directory
+This setting will help deal with relative paths later on...
+ - From the Tool menu, select `Global Options`
+ - Select the RMarkdown section
+ - In the "Evaluate chunks in directory", set the option to "Project" (If you don't see this option, try restarting RStudio.)
+
+
+## 2) Discussion Questions
+Enter answers to the questions just below the >Answer: prompt.
+
+1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
+
+> Answer: My previous experiences with data analytics, R, and Git are few. I am entirely new to R and Git. I am slightly familiar with PowerBI from the end-user standpoint and have done the most basic and informal data analysis in Excel. About 7 years ago now, in undergrad, I took our introductory computer science course, where we primarily learned C, but were also introduced to SQL, JavaScript, and a minimal bit of Python, plus CSS and HTML. I really enjoyed that class and might have taken more computer science classes, but it was already late in my undergrad degree. Having been out of practice since then, I am approaching this class as a total beginner and it's nice to be getting exposure to coding again! 
+
+2. Are there any components of the course about which you feel confident?
+
+> Answer: My desire and ability to learn! And I remember finding debugging kind of fun.
+
+3. Are there any components of the course about which you feel apprehensive?
+
+> Answer: I don't know what I don't know, but I think that, generally, what feels stressful to me is that if I make errors with aspects of setup and/or preparation, it can really delay things and feel unpredictable sometimes. So I know I will need to be starting tasks early and asking for help. I also remember that, in the undergrad CS course I took, after several weeks, the material felt like it got significantly more difficult all of a sudden--like it was not a linear learning curve. On that bit of apprehension, I'm hoping I'm able to feel really solid on material up until a given point before learning the next bit. I know that if I can understand "why" behind something, e.g. how a function might be working behind the scenes, I will better retain info and feel more confident problem-solving.
+
+
+## 3) GitHub
+
+Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository and that you have updated your course README file, committed those changes, and pushed them to your GitHub account. 
+
+> Answer: https://github.com/gaby-cz/EDE_Fall2023
+
+## 4) Knitting
+When you have completed this document, click the `knit` button.This should produce a PDF copy of your markdown document. Submit this PDF to Sakai. 
