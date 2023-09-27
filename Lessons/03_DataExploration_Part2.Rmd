@@ -7,6 +7,8 @@
 
 Why is data exploration our first step in analyzing a dataset? What information do we gain? How does data exploration aid in our decision-making for data analysis steps further down the pipeline?
 
+It's essential to understand our data to know its uses, its structure, its limitations, its assumptions, and patterns in our data before we really start to dig into it. Knowing your data is the first step to analyzing it.
+
 ## Import data and view summaries
 
 ```{r, message = FALSE}
