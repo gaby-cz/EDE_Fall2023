@@ -1,0 +1,220 @@
+---
+title: "5: Part 1 - Data Visualization Basics"
+author: "Environmental Data Analytics | John Fay and Luana Lima | Developed by Kateri Salk"
+date: "Fall 2023"
+output: pdf_document
+geometry: margin=2.54cm
+editor_options: 
+  chunk_output_type: console
+---
+
+## Objectives
+1. Perform simple data visualizations in the R package `ggplot`
+2. Develop skills to adjust aesthetics and layers in graphs
+3. Apply a decision tree framework for appropriate graphing methods
+
+## Opening discussion
+Effective data visualization depends on purposeful choices about graph types. The ideal graph type depends on the type of data and the message the visualizer desires to communicate. The best visualizations are clear and simple. A good resource for data visualization is [Data to Viz](https://www.data-to-viz.com/), which includes both a decision tree for visualization types and explanation pages for each type of data, including links to R resources to create them. Take a few minutes to explore this website.
+
+## Set Up
+
+```{r message=FALSE, warning=FALSE}
+getwd()
+library(tidyverse);library(lubridate);library(here)
+#install.packages("ggridges")
+library(ggridges) # a package to help us build ridge plots, which helps us look at the distribution of a variable over time
+
+here()
+
+PeterPaul.chem.nutrients <- 
+  read.csv(here("Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"), stringsAsFactors = TRUE)
+PeterPaul.chem.nutrients.gathered <-
+  read.csv(here("Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv"), stringsAsFactors = TRUE)
+EPAair <- read.csv(here("Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv"), stringsAsFactors = TRUE)
+
+EPAair$Date <- ymd(EPAair$Date)
+PeterPaul.chem.nutrients$sampledate <- ymd(PeterPaul.chem.nutrients$sampledate)
+PeterPaul.chem.nutrients.gathered$sampledate <- ymd(PeterPaul.chem.nutrients.gathered$sampledate)
+
+```
+
+## ggplot 
+
+ggplot, called from the package `ggplot2`, is a graphing and image generation tool in R. This package is part of tidyverse. While base R has graphing capabilities, ggplot has the capacity for a wider range and more sophisticated options for graphing. 
+ggplot has only a few rules: 
+
+* The first line of ggplot code always starts with `ggplot()` - what should go inside? a data frame, always
+* A data frame must be specified within the `ggplot()` function. Additional datasets can be specified in subsequent layers.
+* Aesthetics V IMPT must be specified, most commonly x and y variables but including others. From the data frame u provided, what shuold u consider on the x axis and what on the y axis. Aesthetics can be specified in the first line of the `ggplot()` function or in subsequent layers.
+* Additional layers must be specified to fill the plot. Usually it will be specified in two lines. In the second lines, come the geoms
+
+### Geoms (the layers for plotting in ggplot)
+
+Here are some commonly used layers for plotting in ggplot: 
+
+* geom_bar
+* geom_histogram
+* geom_freqpoly - freq plot
+* geom_boxplot
+* geom_violin
+* geom_dotplot
+* geom_density_ridges
+* geom_point - can use for skater plots
+* geom_errorbar - when ur trying to add error or trend line to ur data
+* geom_smooth
+* geom_line
+* geom_area
+* geom_abline (plus geom_hline and geom_vline) - add line that has interecept a and slope b or hline which will be horiztonal or vline which will be vertical
+* geom_text - gonna add text to ur plot or change some default on ur labels
+
+### Aesthetics
+Here are some commonly used aesthetic types that can be manipulated in ggplot: 
+
+* color - when u wanna change the color or the contour
+* fill - changing fill color for bar or point. not both of them always available
+* shape - of pt ur using
+* size - of pt ur using
+* transparency
+
+### Plotting continuous variables over time: Scatterplot and Line Plot
+
+```{r, fig.height = 3, fig.width = 4, warning = FALSE}
+# doing the height and width (fixed things abt the layouot of the graph) doing it up there means it'll apply to any plot generated in this r code chunk
+# Scatterplot, defining first argument as data frame where you the variables we're gonna define some visualization will be located and then defining aesthetics
+ggplot(EPAair, aes(x = Date, y = Ozone)) + 
+  geom_point() #shows u chose to plot ozone as a point, don'tneed to put anything more bc r already knows what needs to go in x and y
+
+#genereating same plot diff way below - going to create an object to assign a lot of ggplot and geoms and layers then will print. useful bc if u wanna add two plots to same page on ur report or two plots in same window, u can create ur plot objects. best practice: instead of just creating plot, store that plot in an obj then print the obj. here im providing data frame EPAair, then on second line specifying the aesthetics. nothing will look like it happened unless u print plot. u can nav among plots u generated in the plot tab
+O3plot <- ggplot(EPAair) +
+  geom_point(aes(x = Date, y = Ozone))
+print(O3plot)
+
+# Fix this code - imagine u wanna change the color. most intuitive way to do that is to specify that within the aesthetics. here, storing in new object. although u specify color = "blue", also r added a legend and we didn't ask it to. what's happening? when u specify color inside the aesthetics, it's like ur adding another layer to the plot not just changing the color of the points. when u add a new layer, it just has one variable, blue, but what u rly want to do is not add a layer but just change the color. that code is now commented out. u need to do the color spec outside the aesthetics command.
+O3plot2 <- ggplot(EPAair) +
+  # geom_point(aes(x = Date, y = Ozone, color = "blue"))
+  geom_point(aes(x = Date, y = Ozone), color = "blue")
+print(O3plot2) # not telling me much abt the year or abt the site plot...
+
+# Add additional variables
+# How could you automatically assign a marker color to a variable? 
+# shape decides shape of the dots -- here we're asking r to automatically assign a different shape based on column Year -- r will assign circle to one, triangle to another, etc, depending on the Year of recording
+# now assigning color, but making it such that r will decide color based on the Site.Name. the beauty about doing this w ggplot is it'll automatically assign a marker color per variable. 
+PMplot <- 
+  ggplot(EPAair, aes(x = Month, y = PM2.5, shape = as.factor(Date), color = Site.Name)) +
+  geom_point()
+print(PMplot)
+
+# Separate plot with facets - use facet_wrap - instead of coloring the sites w diff colors, im creating one plot of these for each site (have twelve sites, so i'll choose three rows with four columns)
+PMplot.faceted <-
+  ggplot(EPAair, aes(x = Month, y = PM2.5, shape = as.factor(Year))) +
+  geom_point() +
+  facet_wrap(vars(Site.Name), nrow = 3)
+print(PMplot.faceted)
+
+# Filter dataset within plot building and facet by multiple variables
+PMplot.faceted2 <- 
+  ggplot(subset(EPAair, Site.Name == "Clemmons Middle" | Site.Name == "Leggett" |
+                  Site.Name == "Bryson City"), 
+         aes(x = Month, y = PM2.5)) + 
+  geom_point() +
+  facet_grid(Site.Name ~ Year) 
+print(PMplot.faceted2)
+
+# Plot true time series with geom_line
+PMplot.line <- 
+  ggplot(subset(EPAair, Site.Name == "Leggett"), 
+         aes(x = Date, y = PM2.5)) +
+  geom_line()
+print(PMplot.line)
+
+
+```
+
+
+### Plotting the relationship between two continuous variables: Scatterplot
+
+```{r, fig.height = 3, fig.width = 4, warning = FALSE}
+# Scatterplot
+lightvsDO <- 
+  ggplot(PeterPaul.chem.nutrients, aes(x = irradianceWater, y = dissolvedOxygen)) +
+  geom_point()
+print(lightvsDO)
+
+# Adjust axes
+lightvsDOfixed <- 
+  ggplot(PeterPaul.chem.nutrients, aes(x = irradianceWater, y = dissolvedOxygen)) +
+  geom_point() +
+  xlim(0, 250) +
+  ylim(0, 20)
+print(lightvsDOfixed)
+
+# Depth in the fields of limnology and oceanography is on a reverse scale
+tempvsdepth <- 
+  ggplot(PeterPaul.chem.nutrients, aes(x = temperature_C, y = depth)) +
+  #ggplot(PeterPaul.chem.nutrients, aes(x = temperature_C, y = depth, color = daynum)) +
+  geom_point() +
+  scale_y_reverse()
+print(tempvsdepth)
+
+NvsP <-
+  ggplot(PeterPaul.chem.nutrients, aes(x = tp_ug, y = tn_ug, color = depth)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  geom_abline(aes(slope = 16, intercept = 0))
+print(NvsP)
+
+```
+
+### Plotting continuous vs. categorical variables
+A traditional way to display summary statistics of continuous variables is a bar plot with error bars. Let's explore why this might not be the most effective way to display this type of data. Navigate to the Caveats page on Data to Viz (https://www.data-to-viz.com/caveats.html) and find the page that explores barplots and error bars. 
+
+What might be more effective ways to display the information? Navigate to the boxplots page in the Caveats section to explore further.
+
+```{r, fig.height = 3, fig.width = 4, warning = FALSE}
+# Box and whiskers plot
+Nutrientplot3 <-
+  ggplot(PeterPaul.chem.nutrients.gathered, aes(x = lakename, y = concentration)) +
+  geom_boxplot(aes(color = nutrient)) # Why didn't we use "fill"?
+print(Nutrientplot3)
+
+# Dot plot
+Nutrientplot4 <-
+  ggplot(PeterPaul.chem.nutrients.gathered, aes(x = lakename, y = concentration)) +
+  geom_dotplot(aes(color = nutrient, fill = nutrient), binaxis = "y", binwidth = 1, 
+               stackdir = "center", position = "dodge", dotsize = 2) #
+print(Nutrientplot4)
+
+# Violin plot
+Nutrientplot5 <-
+  ggplot(PeterPaul.chem.nutrients.gathered, aes(x = lakename, y = concentration)) +
+  geom_violin(aes(color = nutrient)) #
+print(Nutrientplot5)
+
+# Frequency polygons
+# Using a tidy dataset
+Nutrientplot6 <-
+  ggplot(PeterPaul.chem.nutrients) +
+  geom_freqpoly(aes(x = tn_ug), color = "darkred") +
+  geom_freqpoly(aes(x = tp_ug), color = "darkblue") +
+  geom_freqpoly(aes(x = nh34), color = "blue") +
+  geom_freqpoly(aes(x = no23), color = "royalblue") +
+  geom_freqpoly(aes(x = po4), color = "red") 
+print(Nutrientplot6)
+
+# Using a gathered dataset
+Nutrientplot7 <-   
+  ggplot(PeterPaul.chem.nutrients.gathered) +
+  geom_freqpoly(aes(x = concentration, color = nutrient))
+print(Nutrientplot7)
+
+# Frequency polygons have the risk of becoming spaghetti plots. 
+# See <https://www.data-to-viz.com/caveat/spaghetti.html> for more info.
+
+# Ridgeline plot
+Nutrientplot6 <-
+  ggplot(PeterPaul.chem.nutrients.gathered, aes(y = nutrient, x = concentration)) +
+  geom_density_ridges(aes(fill = lakename), alpha = 0.5) #
+print(Nutrientplot6)
+
+
+```

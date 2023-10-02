@@ -30,7 +30,7 @@ library(lubridate)
 NTL.phys.data <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv", stringsAsFactors = TRUE) # summary will work for character entries
 
 colnames(NTL.phys.data)
-head(NTL.phys.data)
+head(NTL.phys.data) # seeing the first few observations of the data set
 summary(NTL.phys.data)
 str(NTL.phys.data) # shows the data type of each column
 dim(NTL.phys.data)
