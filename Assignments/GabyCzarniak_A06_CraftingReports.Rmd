@@ -3,6 +3,9 @@ title: 'A06 - Crafting Reports'
 author: "Gaby Czarniak" 
 date: "Fall 2023"
 output: pdf_document
+toc: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Objectives:
@@ -43,13 +46,14 @@ Set the following R code chunk so that it runs when knit, but no messages, error
 #Import libraries
 library(tidyverse);library(lubridate);library(here);library(knitr)
 
-# Import EPA data (from the Processed_KEY folder) & fix dates
+# Importing EPA data (from the Processed_KEY folder) & fixing dates
 epa_data <- read.csv(
   here("Data",
        "Processed_KEY",
        "EPAair_O3_PM25_NC1819_Processed.csv"),
  stringsAsFactors = TRUE) %>% 
- mutate(Date = ymd(Date))
+ # fixing dates
+  mutate(Date = ymd(Date))
 ```
 
 ---
@@ -67,28 +71,34 @@ Customize the chunk options such that the code is run but is not displayed in th
 > -   If your output table spans across two pages, try inserting a page break in the markdown just before your code chunk.
 
 \newpage
+
 ```{r data.summary, echo=FALSE}
 #Compute mean PM2.5 concentration for each county, sorted by value
 summary_PM25 <- epa_data %>% 
+  # cleaning data for table
   drop_na(PM2.5) %>% 
   group_by(COUNTY) %>% 
   summarize(mean_PM2.5 = mean(PM2.5)) %>% 
+  # ordering the rows of the table
   arrange(mean_PM2.5)
 
 #Compute mean ozone concentration for each county, sorted by value
 summary_Ozone <- epa_data %>% 
+  # cleaning data for table
   drop_na(Ozone) %>% 
   group_by(COUNTY) %>% 
   summarize(
     mean_Ozone = mean(Ozone)) %>% 
+  # ordering the rows of the table
   arrange(mean_Ozone)
 
 #Use the `kable` function to produce the 2 tables in markdown format
+# using 'kable' function to produce table of Mean PM2.5 by county
 knitr::kable(summary_PM25, 
              caption = "Mean Particulates (2.5mm)", 
              col.names = c("County", "$\\mu g/m^3$")
              )
-             
+# using 'kable' function to produce table of Mean Ozone by county             
 knitr::kable(summary_Ozone, 
              caption = "Mean Ozone",
              col.names = c("County", "$\\mu g/m^3$")
@@ -101,7 +111,39 @@ knitr::kable(summary_Ozone,
 
 Create two separate code chunks that create boxplots of the distribution of Ozone levels by month using, one for only records collected in 2018 and one for records in 2019. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, align the plots on the left side of the page and set the figure heights so both plots fit on the same page with minimal space remaining. Lastly, add a `fig.cap` chunk option to add a caption (title) to your plot that will display underneath the figure.
 
+```{r Ozone boxplot 2018, fig.align='left', fig.width=5.25, fig.height=3.5, fig.cap= "Ozone Levels in 2018", messsage=FALSE, warning=FALSE, echo=FALSE}
 
+# creating boxplot for just 2018
+ozone_2018_boxplot <- 
+  ggplot(subset(epa_data, Year == "2018"), 
+         # changing months to show as month names, not numbers
+         aes(x=factor(Month, levels = 1:12, 
+                      labels = month.abb), 
+             y=Ozone)) +
+    geom_boxplot() +
+    ggtitle("Recorded Ozone by Month in 2018") +
+    # changing labels and formatting units
+    labs(x = "Month") + 
+    ylab(expression(paste("Ozone Concentration (",mu,")"/m^3)))
+print(ozone_2018_boxplot)
+```
+
+
+```{r Ozone boxplot 2019, fig.align='left', fig.width=5.25, fig.height=3.5, fig.cap="Ozone Levels in 2019", message=FALSE, warning=FALSE, echo=FALSE}
+
+ozone_2019_boxplot <- 
+  ggplot(subset(epa_data, Year == "2019"), 
+        # changing months to show as month names, not numbers
+        aes(x=factor(Month, levels = 1:12, 
+                 labels = month.abb), 
+        y=Ozone)) +
+    geom_boxplot() +
+    ggtitle("Recorded Ozone by Month in 2019") +
+    # changing labels and formatting units
+    labs(x="Month") + 
+    ylab(expression(paste("Ozone Concentration (",mu,")"/m^3)))
+print(ozone_2019_boxplot)
+```
 
 ---
 \newpage
@@ -110,4 +152,4 @@ Create two separate code chunks that create boxplots of the distribution of Ozon
 Add a table of contents to your document and knit to a PDF. Submit your PDF to Sakai, but also be sure to commit and push your Rmd file used to create this knit document to GitHub. In the section below, add a link to your GitHub repository. 
 
 ## Git Repository
-
+https://github.com/gaby-cz/EDE_Fall2023
