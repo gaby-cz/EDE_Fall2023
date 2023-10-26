@@ -76,6 +76,9 @@ Ha: Mean lake temperature recorded during July changes with depth across all lak
 
 5. Visualize the relationship among the two continuous variables with a scatter plot of temperature by depth. Add a smoothed line showing the linear model, and limit temperature values from 0 to 35 °C. Make this plot look pretty and easy to read.
 
+<br>
+<br>
+
 ```{r scatterplot, fig.align='left', fig.width=5, fig.height=4, fig.cap="Change in Temperature (Celsius) by Depth (m)", message=FALSE, warning=FALSE}
 
 #4
@@ -109,7 +112,7 @@ july_tempC_plot <-
 print(july_tempC_plot)
 
 ```
-
+\newpage
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
@@ -156,7 +159,7 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 # Taking note of initial AIC for comparison
 TemperatureAIC_justdepth <- lm(data = Lake.chem.phys.tempC, 
                      temperature_C ~ depth)
-step(TemperatureAIC_justdepth)
+# step(TemperatureAIC_justdepth) -- commenting out for length purposes
 # just depth: AIC is 26153.25
 
 # Running Akaike's Information Criterion (AIC)
@@ -203,7 +206,7 @@ summary(Temperature_model)
 # summary(Lake.chem.phys.tempC)
 # mean has high variance if compared with min and max values
 # want to understand if this is due to the difference in lake
-summary(Lake.chem.phys.tempC$lakename)
+# summary(Lake.chem.phys.tempC$lakename) -- commenting out for length purposes
 # note: not a balanced experiment because 
 # we have more samples at some lakes than others
 
@@ -235,10 +238,11 @@ summary(TempC_totals_anova_lm)
 
 14. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
-```{r scatterplot.2}
+```{r scatterplot.2, warning=FALSE}
 #14.
 july_tempC_plot_2 <- 
-  ggplot(Lake.chem.phys.tempC, aes(x=depth, y=temperature_C, color = lakename, alpha = 0.5)) +
+  ggplot(Lake.chem.phys.tempC, aes(
+    x=depth, y=temperature_C, color = lakename, alpha = 0.5)) +
     geom_point() +
     # adjusting axes to hide extreme values 
     xlim(0, 17) +
@@ -258,7 +262,7 @@ print(july_tempC_plot_2)
 # Post-hoc test to determine which particular differences
 # between pairs of means are significant
 # Pair-wise comparison
-TukeyHSD(TempC_totals_anova)
+# TukeyHSD(TempC_totals_anova) -- commenting out for length purposes
 # Run HSD test
 Temperature_differences_groups <- 
   HSD.test(TempC_totals_anova, 
